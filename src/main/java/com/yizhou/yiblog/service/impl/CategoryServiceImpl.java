@@ -94,4 +94,11 @@ public class CategoryServiceImpl implements ICategoryService {
         categoryDAO.save(oneById);
         return ResponseResult.SUCCESS("Update is Successful ! ");
     }
+
+    @Override
+    public ResponseResult deleteCategory(String id) {
+        int result = categoryDAO.deleteCategoryByUpdateState(id);
+        return result > 0 ? ResponseResult.SUCCESS("Delete is Successful") :
+                ResponseResult.FAIL("NO this category");
+    }
 }

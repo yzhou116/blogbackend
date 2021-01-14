@@ -12,3 +12,6 @@ spring:
     port: 6379
     host: 127.0.0.1
     password: 43798
+yi.blog.image.save-path: /Users/yizhou/IdeaProjects/yiblog/src/main/resources/static/images
+#2mb
+yi.blog.image.max-size: 2097152

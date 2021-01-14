@@ -15,4 +15,6 @@ public interface ICategoryService {
     ResponseResult ListCategory(int page, int size);
 
     ResponseResult updateCategory(String id, Category category);
+
+    ResponseResult deleteCategory(String id);
 }

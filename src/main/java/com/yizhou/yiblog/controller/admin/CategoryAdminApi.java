@@ -20,10 +20,11 @@ public class CategoryAdminApi {
     public ResponseResult addCategory(@RequestBody Category category) {
         return iCategoryService.addCategory(category);
     }
-
+    @PreAuthorize("@permission.admin()")
     @DeleteMapping("/{categoryId}")
     public ResponseResult deleteCategory(@PathVariable("categoryId") String id) {
-        return null;
+
+        return iCategoryService.deleteCategory(id);
     }
 
     @PreAuthorize("@permission.admin()")

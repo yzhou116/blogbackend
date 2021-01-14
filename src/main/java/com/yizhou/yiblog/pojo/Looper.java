@@ -33,7 +33,7 @@ public class Looper {
      *
      * @mbg.generated Sat Jan 09 23:46:26 EST 2021
      */
-    @Column(name = "order")
+    @Column(name = "`order`")
     private Integer order;
 
     /**
