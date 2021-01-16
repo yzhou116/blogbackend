@@ -89,9 +89,8 @@ public class IImageServiceImpl implements IImageService {
                 + File.separator + targetName + "." + type;
         File targetFile = new File(targetPath);
         if (!targetFile.getParentFile().exists()) {
-            targetFile.mkdirs();
+            targetFile.getParentFile().mkdirs();
         }
-
 
         try {
             if (!targetFile.exists()) {

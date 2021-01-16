@@ -5,6 +5,7 @@ import com.yizhou.yiblog.pojo.Category;
 import com.yizhou.yiblog.pojo.User;
 import com.yizhou.yiblog.response.ResponseResult;
 import com.yizhou.yiblog.service.ICategoryService;
+import com.yizhou.yiblog.service.IUserService;
 import com.yizhou.yiblog.util.Constrants;
 import com.yizhou.yiblog.util.SnowflakeIdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
@@ -25,6 +27,8 @@ public class CategoryServiceImpl implements ICategoryService {
     private SnowflakeIdWorker snowflakeIdWorker;
     @Autowired
     private CategoryDAO categoryDAO;
+    @Autowired
+    private IUserService iUserService;
 
     @Override
     public ResponseResult addCategory(Category category) {
@@ -61,6 +65,14 @@ public class CategoryServiceImpl implements ICategoryService {
         if (size < Constrants.Page.MIN_SIZE) {
             size = Constrants.Page.MIN_SIZE;
         }
+        //only admin can get all of the category
+        User user = iUserService.checkUser();
+        if (user == null || user.getRoles().equals(Constrants.User.ROLE_NORMAL)) {
+            List<Category> categories = categoryDAO.listCategoryByState("1");
+            return ResponseResult.SUCCESS("Success!").setData(categories);
+        }
+
+
         //sorted by register time
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createTime").descending());
         Page<Category> categoryList = categoryDAO.findAll(pageable);

@@ -18,6 +18,10 @@ public interface Constrants {
 
     interface Settings {
         String HAD_MANAGER_ACCOUNT_INIT = "had_manager_account_init";
+        String WEB_SITE_TITLE = "web_site_title";
+        String WEB_SITE_DESCRIPTION = "web_site_description";
+        String WEB_SITE_KEY_WORD = "web_site_key_word";
+        String WEB_SITE_VIEW_COUNT = "web_site_view_count";
     }
 
     interface Page {
@@ -33,4 +37,15 @@ public interface Constrants {
         int MONTH_1 = 30 * DAY_1;
 
     }
+
+    interface Article {
+        int TITLE_MAX_LENGTH = 128;
+        int SUMMARY_MAX_LENGTH = 256;
+        String STATE_DELETE = "0";
+        String STATE_PUBLISH = "1";
+        String STATE_DRAFT = "2";
+        String STATE_TOP = "3";
+    }
+
+
 }

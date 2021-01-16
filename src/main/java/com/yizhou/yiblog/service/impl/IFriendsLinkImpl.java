@@ -1,9 +1,12 @@
 package com.yizhou.yiblog.service.impl;
 
 import com.yizhou.yiblog.dao.FriendsLinkDAO;
+import com.yizhou.yiblog.pojo.Category;
 import com.yizhou.yiblog.pojo.Friends;
+import com.yizhou.yiblog.pojo.User;
 import com.yizhou.yiblog.response.ResponseResult;
 import com.yizhou.yiblog.service.IFriendsLinkService;
+import com.yizhou.yiblog.service.IUserService;
 import com.yizhou.yiblog.util.Constrants;
 import com.yizhou.yiblog.util.SnowflakeIdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
@@ -24,6 +28,9 @@ public class IFriendsLinkImpl implements IFriendsLinkService {
     private SnowflakeIdWorker snowflakeIdWorker;
     @Autowired
     private FriendsLinkDAO friendsLinkDAO;
+
+    @Autowired
+    private IUserService iUserService;
 
     @Override
     public ResponseResult addFriendLink(Friends friends) {
@@ -69,6 +76,11 @@ public class IFriendsLinkImpl implements IFriendsLinkService {
         }
         if (size < Constrants.Page.MIN_SIZE) {
             size = Constrants.Page.MIN_SIZE;
+        }
+        User user = iUserService.checkUser();
+        if (user == null || user.getRoles().equals(Constrants.User.ROLE_NORMAL)) {
+            List<Friends> friends = friendsLinkDAO.listFriendsbyByState("1");
+            return ResponseResult.SUCCESS("Success!").setData(friends);
         }
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createTime"));
         Page<Friends> list = friendsLinkDAO.findAll(pageable);

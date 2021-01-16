@@ -1,41 +1,65 @@
 package com.yizhou.yiblog.controller.portal;
 
 import com.yizhou.yiblog.response.ResponseResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.yizhou.yiblog.service.ICategoryService;
+import com.yizhou.yiblog.service.IFriendsLinkService;
+import com.yizhou.yiblog.service.ILooperService;
+import com.yizhou.yiblog.service.impl.IWebsiteService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/portal/web_size_info")
 public class WebSizeInfoApi {
-    @GetMapping("/categories")
-    public ResponseResult getCategory() {
-        return null;
+
+    @Autowired
+    private ICategoryService iCategoryService;
+
+    @Autowired
+    private IFriendsLinkService iFriendsLinkService;
+    @Autowired
+    private ILooperService iLooperService;
+
+    @Autowired
+    private IWebsiteService iWebsiteService;
+
+
+    @GetMapping("/categories/{page}/{size}")
+    public ResponseResult getCategory(@PathVariable("page") int page,
+                                      @PathVariable("size") int size) {
+        return iCategoryService.ListCategory(page, size);
     }
 
     @GetMapping("/title")
     public ResponseResult getWebSizeTitle() {
-        return null;
+        return iWebsiteService.getWebsiteTitle();
     }
 
     @GetMapping("/view_count")
     public ResponseResult getWebSizeViewCount() {
-        return null;
+        return iWebsiteService.getSizeViewCount();
     }
 
     @GetMapping("/seo")
     public ResponseResult getWebSizeSeoInfo() {
-        return null;
+        return iWebsiteService.getWebsiteSeoInfo();
     }
 
-    @GetMapping("/loop")
-    public ResponseResult getLoops() {
-        return null;
+    @GetMapping("/loop/{page}/{size}")
+    public ResponseResult getLoops(@PathVariable("page") int page,
+                                   @PathVariable("size") int size) {
+        return iLooperService.ListLoops(page, size);
     }
 
-    @GetMapping("/friend_link")
-    public ResponseResult getLinks() {
-        return null;
+    @GetMapping("/friend_link/{page}/{size}")
+    public ResponseResult getLinks(@PathVariable("page") int page,
+                                   @PathVariable("size") int size) {
+        return iFriendsLinkService.ListAllFriends(page, size);
+    }
+
+    @PutMapping("/view_count")
+    public void updateViewCount() {
+        iWebsiteService.updateViewCount();
     }
 
 }

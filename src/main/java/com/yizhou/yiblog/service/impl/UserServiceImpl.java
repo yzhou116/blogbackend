@@ -8,9 +8,11 @@ import com.wf.captcha.base.Captcha;
 import com.yizhou.yiblog.dao.RefreshTokenDAO;
 import com.yizhou.yiblog.dao.SettingsDAO;
 import com.yizhou.yiblog.dao.UserDAO;
+import com.yizhou.yiblog.dao.UserNoPasswordDAO;
 import com.yizhou.yiblog.pojo.Settings;
 import com.yizhou.yiblog.pojo.User;
 import com.yizhou.yiblog.pojo.RefreshToken;
+import com.yizhou.yiblog.pojo.UserNoPassword;
 import com.yizhou.yiblog.response.ReponseState;
 import com.yizhou.yiblog.response.ResponseResult;
 import com.yizhou.yiblog.service.IUserService;
@@ -70,6 +72,8 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private Gson gson;
+    @Autowired
+    private UserNoPasswordDAO userNoPasswordDAO;
 
     public static final int[] captchatypes = {Captcha.FONT_1, Captcha.FONT_2, Captcha.FONT_3, Captcha.FONT_4,
             Captcha.FONT_5, Captcha.FONT_6, Captcha.FONT_7, Captcha.FONT_8, Captcha.FONT_9, Captcha.FONT_10};
@@ -519,7 +523,7 @@ public class UserServiceImpl implements IUserService {
         }
         //sorted by register time
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createTime").descending());
-        Page<User> userDAOAll = userDAO.listAllUserWithoutPassword(pageable);
+        Page<UserNoPassword> userDAOAll = userNoPasswordDAO.findAll(pageable);
 
         return ResponseResult.SUCCESS("Success to get All users").setData(userDAOAll);
     }

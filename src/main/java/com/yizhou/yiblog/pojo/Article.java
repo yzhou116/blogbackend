@@ -2,11 +2,11 @@ package com.yizhou.yiblog.pojo;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_article")
@@ -144,6 +144,47 @@ public class Article {
      * @return the value of tb_article.id
      * @mbg.generated Sat Jan 09 23:46:26 EST 2021
      */
+    @Column(name = "cover")
+    private String cover;
+    @OneToOne(targetEntity = UserNoPassword.class)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private UserNoPassword userNoPassword;
+
+    @Transient
+    private List<String> cutLable = new ArrayList<>();
+
+    public UserNoPassword getUserNoPassword() {
+        return userNoPassword;
+    }
+
+    public void setUserNoPassword(UserNoPassword userNoPassword) {
+        this.userNoPassword = userNoPassword;
+    }
+
+    public List<String> getCutLable() {
+        return cutLable;
+    }
+
+    public void setCutLable(List<String> cutLable) {
+        this.cutLable = cutLable;
+    }
+
+    public UserNoPassword getUser() {
+        return userNoPassword;
+    }
+
+    public void setUser(UserNoPassword userNoPassword) {
+        this.userNoPassword = userNoPassword;
+    }
+
+    public String getCover() {
+        return cover;
+    }
+
+    public void setCover(String cover) {
+        this.cover = cover;
+    }
+
     public String getId() {
         return id;
     }
@@ -321,6 +362,16 @@ public class Article {
      * @mbg.generated Sat Jan 09 23:46:26 EST 2021
      */
     public String getLabels() {
+        this.cutLable.clear();
+        if (this.labels != null) {
+            if (!this.labels.contains("-")) {
+                this.cutLable.add(this.labels);
+            } else {
+                String[] split = this.labels.split("-");
+                List<String> list = Arrays.asList(split);
+                this.cutLable.addAll(list);
+            }
+        }
         return labels;
     }
 

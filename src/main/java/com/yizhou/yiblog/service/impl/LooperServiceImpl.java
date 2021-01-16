@@ -3,8 +3,10 @@ package com.yizhou.yiblog.service.impl;
 import com.yizhou.yiblog.dao.LooperDAO;
 import com.yizhou.yiblog.pojo.Friends;
 import com.yizhou.yiblog.pojo.Looper;
+import com.yizhou.yiblog.pojo.User;
 import com.yizhou.yiblog.response.ResponseResult;
 import com.yizhou.yiblog.service.ILooperService;
+import com.yizhou.yiblog.service.IUserService;
 import com.yizhou.yiblog.util.Constrants;
 import com.yizhou.yiblog.util.SnowflakeIdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
@@ -25,6 +28,8 @@ public class LooperServiceImpl implements ILooperService {
     private SnowflakeIdWorker snowflakeIdWorker;
     @Autowired
     private LooperDAO looperDAO;
+    @Autowired
+    private IUserService iUserService;
 
 
     @Override
@@ -58,6 +63,7 @@ public class LooperServiceImpl implements ILooperService {
             return ResponseResult.FAIL("Can't find it");
         }
 
+
         return ResponseResult.SUCCESS("Success").setData(oneById);
     }
 
@@ -68,6 +74,11 @@ public class LooperServiceImpl implements ILooperService {
         }
         if (size < Constrants.Page.MIN_SIZE) {
             size = Constrants.Page.MIN_SIZE;
+        }
+        User user = iUserService.checkUser();
+        if (user == null || user.getRoles().equals(Constrants.User.ROLE_NORMAL)) {
+            List<Looper> loopers = looperDAO.listLoopsbyByState("1");
+            return ResponseResult.SUCCESS("Success!").setData(loopers);
         }
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createTime"));
         Page<Looper> list = looperDAO.findAll(pageable);
