@@ -47,5 +47,11 @@ public interface Constrants {
         String STATE_TOP = "3";
     }
 
+    interface Comment {
+        String STATE_PUBLISH = "1";
+
+        String STATE_TOP = "3";
+    }
+
 
 }

@@ -11,7 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class SearchPortalApi {
     @GetMapping
     public ResponseResult doSearch(@RequestParam("keyword") String keyword,
-                                   @RequestParam("page") int page) {
+                                   @RequestParam("page") int page,
+                                   @RequestParam("size") int size,
+                                   @RequestParam(value = "categoryId", required = false) String categoryId,
+                                   @RequestParam(value = "sort", required = false) Integer sort) {
+        /**
+         * Need to learn solr, will finish this part after.
+         */
         return null;
     }
 

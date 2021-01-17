@@ -53,7 +53,7 @@ public class Swagger2Configration {
                 .apis(RequestHandlerSelectors.basePackage("com.yizhou.yiblog.controller.admin"))
                 .paths(PathSelectors.any()) // 可以根据url路径设置哪些请求加入文档，忽略哪些请求
                 .build()
-                .groupName("Manage Center");
+                .groupName("Admin Center");
     }
 
 
