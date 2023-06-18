@@ -40,7 +40,9 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -77,6 +79,18 @@ public class UserServiceImpl implements IUserService {
 
     public static final int[] captchatypes = {Captcha.FONT_1, Captcha.FONT_2, Captcha.FONT_3, Captcha.FONT_4,
             Captcha.FONT_5, Captcha.FONT_6, Captcha.FONT_7, Captcha.FONT_8, Captcha.FONT_9, Captcha.FONT_10};
+    /*
+    public static void main(String[] args) {
+        UserServiceImpl userService = new UserServiceImpl();
+        User users = new User();
+        users.setUserName("yzhou116");
+        users.setPassword("sd4888202");
+
+        users.setEmail("yzhou116@gmail.com");
+        userService.initAdminAccount(users,null);
+    }
+
+     */
 
     /**
      * init admin.
@@ -85,6 +99,7 @@ public class UserServiceImpl implements IUserService {
      * @param httpServletRequest
      * @return
      */
+
 
     @Override
     public ResponseResult initAdminAccount(User user, HttpServletRequest httpServletRequest) {
@@ -131,6 +146,12 @@ public class UserServiceImpl implements IUserService {
 
         return ResponseResult.SUCCESS("SUCCESS!");
     }
+
+    public static void main(String[] args) {
+
+    }
+
+
 
     /**
      * @param response
@@ -322,21 +343,41 @@ public class UserServiceImpl implements IUserService {
                                      User user,
                                      HttpServletRequest request,
                                      HttpServletResponse response) {
-        String captchaValue = (String) redisUtil.get(Constrants.User.KEY_CAPTCHA_CONTENT + captchaKey);
+      //  String captchaValue = (String) redisUtil.get(Constrants.User.KEY_CAPTCHA_CONTENT + captchaKey);
         /**
          * Attention: when I test captcha all of english letter need to be lowercase !
          *
          *
          */
-        if (!captcha.equals(captchaValue)) {
-            return ResponseResult.FAIL("Captcha is wrong");
-        }
+       // if (!captcha.equals(captchaValue)) {
+         //   return ResponseResult.FAIL("Captcha is wrong");
+       // }
         if (user.getUserName() == null) {
             return ResponseResult.FAIL("User name  is empty");
         }
         if (user.getPassword() == null) {
             return ResponseResult.FAIL(" Password is empty");
         }
+        if(isValid(user.getUserName()) && Objects.equals(user.getPassword(), Constrants.User.GOOGLE_LOGIN)){
+            User byUserName = userDAO.findOneByUserName(user.getUserName());
+            if(byUserName == null){
+                String ipaddress = request.getRemoteAddr();
+                user.setLoginIp(ipaddress);
+                user.setRegIp(ipaddress);
+                user.setEmail(user.getUserName());
+                user.setUpdateTime(new Date());
+                user.setCreateTime(new Date());
+                user.setAvatar(Constrants.User.DEFAULT_AVATAR);
+                user.setRoles(Constrants.User.ROLE_NORMAL);
+                user.setState("1");
+                user.setId(snowflakeIdWorker.nextId() + "");
+                userDAO.save(user);
+                return  successUser(user,ipaddress);
+            }else{
+               return successUser(byUserName, null);
+            }
+        }
+
         //check user name first
         User byUserName = userDAO.findOneByUserName(user.getUserName());
         if (byUserName == null) {
@@ -356,7 +397,17 @@ public class UserServiceImpl implements IUserService {
         //create token:
         RefreshTokenKK(response, byUserName);
 
-        return ResponseResult.SUCCESS("Log in Success ! ");
+       ResponseResult responseResult = ResponseResult.SUCCESS("Log in Success ! ");
+       User resUser = new User();
+       resUser.setId(byUserName.getId());
+        resUser.setUserName(byUserName.getUserName());
+        resUser.setEmail(byUserName.getEmail());
+        resUser.setAvatar(byUserName.getAvatar());
+       responseResult.setData(resUser);
+      //  responseResult.setData(byUserName.getId());
+
+       // return ResponseResult.SUCCESS("Log in Success ! ");
+        return  responseResult;
     }
 
     private String RefreshTokenKK(HttpServletResponse response, User byUserName) {
@@ -369,7 +420,7 @@ public class UserServiceImpl implements IUserService {
         //if frontend calls the token with md5 value , get token from redis
         String tokenKey = DigestUtils.md5DigestAsHex(token.getBytes());
         //add token to cookies:
-        redisUtil.set(Constrants.User.KEY_TOKEN + tokenKey, token, 2 * Constrants.TimeValue.HOUR_1);
+    //    redisUtil.set(Constrants.User.KEY_TOKEN + tokenKey, token, 2 * Constrants.TimeValue.HOUR_1);
 
         CookieUtils.setupCookie(response, Constrants.User.KEY_TOKEN_COOKIE, tokenKey);
       /*  cookie.setDomain("localhost");
@@ -407,8 +458,6 @@ public class UserServiceImpl implements IUserService {
                     JwtUtil.parseJWT(oneByTokenKey.getRefreshToken());
                     String userId = oneByTokenKey.getUserId();
                     User userfinbyId = userDAO.findOneById(userId);
-
-
                     String newtokenkey = RefreshTokenKK(response, userfinbyId);
                     return parseByTokenKey(newtokenkey);
                 } catch (Exception r) {
@@ -494,7 +543,7 @@ public class UserServiceImpl implements IUserService {
         userDAO.save(userDAOOneById);
         //remove the token in redis when next time i need token, refreshtoken will create one
         String cookiekey = CookieUtils.getCookie(request, Constrants.User.KEY_TOKEN_COOKIE);
-        redisUtil.del(cookiekey);
+      //  redisUtil.del(cookiekey);
 
         return ResponseResult.SUCCESS("Edit is Success !").setData(userDAOOneById);
     }
@@ -600,4 +649,35 @@ public class UserServiceImpl implements IUserService {
         }
         return null;
     }
+    public static boolean isValid(String email)
+    {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
+                "[a-zA-Z0-9_+&*-]+)*@" +
+                "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+                "A-Z]{2,7}$";
+
+        Pattern pat = Pattern.compile(emailRegex);
+        if (email == null)
+            return false;
+        return pat.matcher(email).matches();
+    }
+    public   ResponseResult successUser(User user, String ip){
+
+        ResponseResult responseResult = ResponseResult.SUCCESS("Log in Success ! ");
+        User resUser = new User();
+        if(ip != null){
+            resUser.setLoginIp(ip);
+            resUser.setRegIp(ip);
+
+        }
+        resUser.setId(user.getId());
+        resUser.setUserName(user.getUserName());
+        resUser.setEmail(user.getEmail());
+        resUser.setAvatar(user.getAvatar());
+        responseResult.setData(resUser);
+        return  responseResult;
+    }
+
+
 }
+

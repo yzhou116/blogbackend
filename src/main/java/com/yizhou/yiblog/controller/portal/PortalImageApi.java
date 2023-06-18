@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/portal/image")
-public class ImageApi {
+@RequestMapping("/portal/img")
+public class PortalImageApi {
 
     @Autowired
     private IImageService iImageService;

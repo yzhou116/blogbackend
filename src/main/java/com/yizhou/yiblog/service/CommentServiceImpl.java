@@ -39,6 +39,7 @@ public class CommentServiceImpl implements ICommentService {
 
     @Override
     public ResponseResult postComment(Comment comment) {
+        /*
         User user = iUserService.checkUser();
         if (user == null) {
             return ResponseResult.FAIL("Not login");
@@ -56,12 +57,17 @@ public class CommentServiceImpl implements ICommentService {
         if (content == null) {
             return ResponseResult.FAIL("Content is null");
         }
+
+         */
         comment.setId(snowflakeIdWorker.nextId() + "");
+        comment.setArticleId("975287247106473984");
+        comment.setParentContent("");
         comment.setCreateTime(new Date());
         comment.setUpdateTime(new Date());
-        comment.setUserAvatar(user.getAvatar());
-        comment.setUserName(user.getUserName());
-        comment.setUserId(user.getId());
+        comment.setUserAvatar("");
+        comment.setUserName(comment.getUserName());
+        comment.setUserId("974605281549877248");
+        comment.setState("1");
         commentDAO.save(comment);
 
         return ResponseResult.SUCCESS("Success");
@@ -142,4 +148,14 @@ public class CommentServiceImpl implements ICommentService {
         }
         return ResponseResult.FAIL("Can't support this behavior");
     }
+
+    @Override
+    public ResponseResult listComments() {
+
+        List<Comment> list = commentDAO.findAll();
+
+        return ResponseResult.SUCCESS("Success").setData(list);
+    }
+
+
 }

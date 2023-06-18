@@ -13,4 +13,8 @@ public interface ICommentService {
     ResponseResult ListComments(int page, int size);
 
     ResponseResult topComment(String id);
+
+    ResponseResult listComments();
+
+
 }

@@ -5,7 +5,7 @@ import com.yizhou.yiblog.response.ResponseResult;
 import com.yizhou.yiblog.service.ICommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+@CrossOrigin
 @RestController
 @RequestMapping("/portal/comment")
 public class CommentPortalApi {
@@ -30,6 +30,12 @@ public class CommentPortalApi {
                                       @PathVariable("page") int page,
                                       @PathVariable("size") int size) {
         return iCommentService.ListCommentById(articleId, page, size);
+
+    }
+
+    @GetMapping("/listss")
+    public ResponseResult getComments(@PathVariable("count") String count) {
+        return iCommentService.listComments();
 
     }
 

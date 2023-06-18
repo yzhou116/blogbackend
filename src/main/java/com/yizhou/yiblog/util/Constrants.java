@@ -14,6 +14,7 @@ public interface Constrants {
         String KEY_EMAIL_SEND_ADDRESS = "KEY_EMAIL_SEND_ADDRESS_";
         String KEY_TOKEN = "key_token_";
         String KEY_TOKEN_COOKIE = "blog_token";
+        String GOOGLE_LOGIN = "GOOGLE_LOG_IN";
     }
 
     interface Settings {

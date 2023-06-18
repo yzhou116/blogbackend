@@ -10,26 +10,27 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin/article")
+@CrossOrigin
 public class ArticleApi {
 
     @Autowired
     private IArticleService iArticleService;
 
-    @PreAuthorize("@permission.admin()")
+    //@PreAuthorize("@permission.admin()")
     @PostMapping
     public ResponseResult addArticle(@RequestBody Article article) {
         return iArticleService.PostArticle(article);
 
     }
 
-    @PreAuthorize("@permission.admin()")
+    //@PreAuthorize("@permission.admin()")
     @DeleteMapping("/{articleId}")
     public ResponseResult deleteArticle(@PathVariable("articleId") String articleId) {
         return iArticleService.deleteArticleId(articleId);
 
     }
 
-    @PreAuthorize("@permission.admin()")
+    //@PreAuthorize("@permission.admin()")
     @PostMapping("/{articleId}")
     public ResponseResult updateArticle(@PathVariable("articleId") String articleId,
                                         @RequestBody Article article) {
@@ -37,14 +38,14 @@ public class ArticleApi {
 
     }
 
-    @PreAuthorize("@permission.admin()")
+    //@PreAuthorize("@permission.admin()")
     @GetMapping("/{articleId}")
     public ResponseResult getArticle(@PathVariable("articleId") String articleId) {
         return iArticleService.getArticleById(articleId);
 
     }
 
-    @PreAuthorize("@permission.admin()")
+    //@PreAuthorize("@permission.admin()")
     @GetMapping("/list/{page}/{size}")
     public ResponseResult listArticle(@PathVariable("page") int page,
                                       @PathVariable("size") int size,
@@ -56,14 +57,15 @@ public class ArticleApi {
 
     }
 
-    @PreAuthorize("@permission.admin()")
+
+    //@PreAuthorize("@permission.admin()")
     @DeleteMapping("/state/{articleId}")
     public ResponseResult deleteArticleByState(@PathVariable("articleId") String id) {
 
         return iArticleService.deleteArticleByState(id);
     }
 
-    @PreAuthorize("@permission.admin()")
+    //@PreAuthorize("@permission.admin()")
     @PutMapping("/top/{articleId}")
     public ResponseResult topArticleState(@PathVariable("articleId") String id) {
 

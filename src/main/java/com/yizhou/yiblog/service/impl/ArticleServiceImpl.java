@@ -2,6 +2,7 @@ package com.yizhou.yiblog.service.impl;
 
 import com.yizhou.yiblog.dao.ArticleDAO;
 import com.yizhou.yiblog.dao.LabelDAO;
+import com.yizhou.yiblog.dao.UserDAO;
 import com.yizhou.yiblog.pojo.Article;
 import com.yizhou.yiblog.pojo.Category;
 import com.yizhou.yiblog.pojo.Labels;
@@ -46,14 +47,22 @@ public class ArticleServiceImpl implements IArticleService {
     private Random random;
     @Autowired
     private LabelDAO labelDAO;
+    @Autowired
+    private UserDAO userDAO;
 
     @Override
     public ResponseResult PostArticle(Article article) {
-
+/*
         User user = iUserService.checkUser();
         if (user == null) {
             ResponseResult.FAIL("No User log in");
         }
+
+ */
+        User user = userDAO.findOneByUserName(article.getUserName());
+
+
+
         String title = article.getTitle();
         if (title == null) {
             return ResponseResult.FAIL("Title is null");
@@ -66,9 +75,12 @@ public class ArticleServiceImpl implements IArticleService {
         if (type == null) {
             return ResponseResult.FAIL("Type is null");
         }
+        /*
         if (!"0".equals(type) && !"1".equals(type)) {
             return ResponseResult.FAIL("Type is wrong");
         }
+
+         */
 
         if (Constrants.Article.STATE_PUBLISH.equals(state)) {
             if (title.length() > Constrants.Article.TITLE_MAX_LENGTH) {
@@ -79,7 +91,7 @@ public class ArticleServiceImpl implements IArticleService {
             if (content == null) {
                 return ResponseResult.FAIL("Content is null");
             }
-
+            /*
             String summary = article.getSummary();
             if (summary == null) {
                 return ResponseResult.FAIL("Summary is null");
@@ -87,6 +99,8 @@ public class ArticleServiceImpl implements IArticleService {
             if (summary.length() > Constrants.Article.SUMMARY_MAX_LENGTH) {
                 return ResponseResult.FAIL("Summary is long");
             }
+
+             */
             String labels = article.getLabels();
             if (labels == null) {
                 return ResponseResult.FAIL("Label is null");
@@ -111,8 +125,10 @@ public class ArticleServiceImpl implements IArticleService {
         }
         article.setCreateTime(new Date());
         article.setUpdateTime(new Date());
+        article.setCategoryId("973081749405827072");
+        article.setSummary("None Summary");
         articleDAO.save(article);
-        this.setUpLabel(article.getLabels());
+     //   this.setUpLabel(article.getLabels());
         if (Constrants.Article.STATE_DRAFT.equals(state)) {
             return ResponseResult.SUCCESS("Draft post Success");
         }
@@ -168,14 +184,21 @@ public class ArticleServiceImpl implements IArticleService {
 
     @Override
     public ResponseResult getArticleById(String articleId) {
-        Article article = articleDAO.findOneById(articleId);
-        if (article == null) {
+
+      int res = updateViewCount(articleId);
+      Article article = articleDAO.findOneById(articleId);
+        if (article == null || res == 0) {
             return ResponseResult.FAIL("Article is not exist");
         }
         String state = article.getState();
         if (Constrants.Article.STATE_PUBLISH.equals(state) || Constrants.Article.STATE_TOP.equals(state)) {
-            return ResponseResult.SUCCESS("Success").setData(article);
+
+                return ResponseResult.SUCCESS("Success").setData(article);
+
+
         }
+          return ResponseResult.FAIL("Can not find article");
+        /*
         //need to check if user is admin:
         User user = iUserService.checkUser();
         //  String roles = user.getRoles();
@@ -183,6 +206,11 @@ public class ArticleServiceImpl implements IArticleService {
             return ResponseResult.PERMISSION_DENIED();
         }
         return ResponseResult.SUCCESS("Success").setData(article);
+
+         */
+    }
+    public int updateViewCount(String articleId){
+       return articleDAO.updateViewCount(articleId);
     }
 
     @Override
@@ -291,12 +319,7 @@ public class ArticleServiceImpl implements IArticleService {
     @Override
     public ResponseResult ListTopArticles() {
 
-        List<Article> result = articleDAO.findAll(new Specification<Article>() {
-            @Override
-            public Predicate toPredicate(Root<Article> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-                return criteriaBuilder.equal(root.get("state").as(String.class), Constrants.Article.STATE_TOP);
-            }
-        });
+        List<Article> result = articleDAO.getTop5Article();
 
         return ResponseResult.SUCCESS("Success").setData(result);
     }
@@ -352,5 +375,27 @@ public class ArticleServiceImpl implements IArticleService {
         Pageable pageable = PageRequest.of(0, size, Sort.by("count").descending());
         Page<Labels> labelsPage = labelDAO.findAll(pageable);
         return ResponseResult.SUCCESS("Success").setData(labelsPage);
+    }
+
+    @Override
+    public ResponseResult getListByUserId(String id) {
+        List<Article> userArticle = articleDAO.getArtileByUserId(id,5);
+        return ResponseResult.SUCCESS("Success").setData(userArticle);
+    }
+
+    @Override
+    public ResponseResult getListByUserName(String username, int page, int size) {
+        List<Article> userArticle = articleDAO.getArtileByUserName(username,5);
+        return ResponseResult.SUCCESS("Success").setData(userArticle);
+    }
+
+    @Override
+    public ResponseResult normaldeleteArticleById(String articleId, String userName) {
+        int result = articleDAO.deleteAllById(articleId);
+        List<Article> userArticle =  articleDAO.getArtileByUserName(userName,5);;
+        if(result > 0){
+            return ResponseResult.SUCCESS("Success").setData(userArticle);
+        }
+        return ResponseResult.FAIL("No this article").setData(userArticle);
     }
 }

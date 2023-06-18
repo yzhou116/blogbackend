@@ -33,5 +33,19 @@ public interface ArticleDAO extends JpaRepository<Article, String>, JpaSpecifica
     @Query(nativeQuery = true, value = "select * from `tb_article` where `id` != ? and (`state` = '1' or `state` = '3')  order by `create_time` desc limit ?")
     List<Article> listRestOfArticleBySize(String originalArticleId, int size);
 
+    @Query(nativeQuery = true, value = "select * from `tb_article` where `user_id` = ? and (`state` = '1' or `state` = '3')  order by `create_time` desc limit ?")
+    List<Article> getArtileByUserId(String id, int size);
+
+    @Query(nativeQuery = true, value = "select * from tb_article order by view_count desc limit 5")
+    List<Article> getTop5Article();
+
+    @Modifying
+    @Query(nativeQuery = true, value = "update `tb_article` set view_count = view_count + 1 where `id` = ?")
+    int updateViewCount(String id);
+
+    @Query(nativeQuery = true, value = "select * from `tb_article` where `user_name` = ? and (`state` = '1' or `state` = '3')  order by `create_time` desc limit ?")
+    List<Article> getArtileByUserName(String userName, int size);
+
+
 
 }

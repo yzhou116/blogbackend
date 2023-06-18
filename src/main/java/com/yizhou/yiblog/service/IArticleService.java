@@ -25,4 +25,10 @@ public interface IArticleService {
     ResponseResult ListArticlesByLabel(int page, int size, String label);
 
     ResponseResult ListLabels(int size);
+
+    ResponseResult getListByUserId(String id);
+
+    ResponseResult getListByUserName(String id,int page, int size);
+
+    ResponseResult normaldeleteArticleById(String id, String userName);
 }

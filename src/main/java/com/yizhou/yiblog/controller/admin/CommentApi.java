@@ -13,21 +13,21 @@ public class CommentApi {
     @Autowired
     private ICommentService iCommentService;
 
-    @PreAuthorize("@permission.admin()")
+    //@PreAuthorize("@permission.admin()")
     @DeleteMapping("/{commentId}")
     public ResponseResult deleteComment(@PathVariable("commentId") String commentId) {
         return iCommentService.deleteCommentById(commentId);
 
     }
 
-    @PreAuthorize("@permission.admin()")
+    //@PreAuthorize("@permission.admin()")
     @GetMapping("/{commentId}")
     public ResponseResult getComment(@PathVariable("commentId") String commentId) {
         return null;
 
     }
 
-    @PreAuthorize("@permission.admin()")
+    //@PreAuthorize("@permission.admin()")
     @GetMapping("/list")
     public ResponseResult listComment(@RequestParam("page") int page,
                                       @RequestParam("size") int size) {

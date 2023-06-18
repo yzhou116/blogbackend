@@ -17,16 +17,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 
 @Slf4j
+@CrossOrigin
 @RestController
 @RequestMapping("/user")
 public class UserApi {
@@ -74,13 +79,25 @@ public class UserApi {
      * 3,graphic check
      * 4, graphic key
      *
-     * @param captchaKey
-     * @param captcha
+
      * @param user
      * @return
      */
+    @PostMapping("/login")
+    public ResponseResult Login(
+                                @RequestBody User user,
+                                HttpServletRequest request,
+                                HttpServletResponse response) {
 
+        return iUserService.CheckLogin(null, null, user, request, response);
+    }
+    @GetMapping("/googlelogin")
+    public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
+        int i = 0;
+        return Collections.singletonMap("name", principal.getAttribute("name"));
+    }
 
+/*
     @PostMapping("/login/{captcha}/{captcha_key}")
     public ResponseResult Login(@PathVariable("captcha_key") String captchaKey,
                                 @PathVariable("captcha") String captcha,
@@ -89,6 +106,8 @@ public class UserApi {
                                 HttpServletResponse response) {
         return iUserService.CheckLogin(captcha, captchaKey, user, request, response);
     }
+
+ */
 
     @GetMapping("/captcha")
     public void getCaptcha(HttpServletResponse response,

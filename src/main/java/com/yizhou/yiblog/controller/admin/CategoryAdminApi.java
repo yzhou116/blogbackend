@@ -15,32 +15,32 @@ public class CategoryAdminApi {
     private ICategoryService iCategoryService;
 
 
-    @PreAuthorize("@permission.admin()")
+    //@PreAuthorize("@permission.admin()")
     @PostMapping
     public ResponseResult addCategory(@RequestBody Category category) {
         return iCategoryService.addCategory(category);
     }
-    @PreAuthorize("@permission.admin()")
+    //@PreAuthorize("@permission.admin()")
     @DeleteMapping("/{categoryId}")
     public ResponseResult deleteCategory(@PathVariable("categoryId") String id) {
 
         return iCategoryService.deleteCategory(id);
     }
 
-    @PreAuthorize("@permission.admin()")
+   // @PreAuthorize("@permission.admin()")
     @PutMapping("/{categoryId}")
     public ResponseResult updateCategory(@PathVariable("categoryId") String id,
                                          @RequestBody Category category) {
         return iCategoryService.updateCategory(id, category);
     }
 
-    @PreAuthorize("@permission.admin()")
+    //@PreAuthorize("@permission.admin()")
     @GetMapping("/{categoryId}")
     public ResponseResult getCategory(@PathVariable("categoryId") String id) {
         return iCategoryService.getCategory(id);
     }
 
-    @PreAuthorize("@permission.admin()")
+    //@PreAuthorize("@permission.admin()")
     @GetMapping("/list/{page}/{size}")
     public ResponseResult listCategory(@PathVariable("page") int page,
                                        @PathVariable("size") int size) {

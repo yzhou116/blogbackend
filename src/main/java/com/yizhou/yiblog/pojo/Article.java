@@ -146,6 +146,7 @@ public class Article {
      */
     @Column(name = "cover")
     private String cover;
+
     @OneToOne(targetEntity = UserNoPassword.class)
     @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
     private UserNoPassword userNoPassword;
